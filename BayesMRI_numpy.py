@@ -12,16 +12,16 @@ from scipy.stats import norm
 
 def nifti_check_file(filename):
     filename,theext = os.path.splitext(filename)
-    if theext = ".gz":
+    if theext == ".gz":
         filename,theext = os.path.splitext(filename)
         theext = theext + ".gz"
-    if theext = ".nii":
+    if theext == ".nii":
         filename = filename+".nii"
         return filename,os.access(filename,os.R_OK)
-    elif theext = ".nii.gz":
+    elif theext == ".nii.gz":
         filename = filename+".nii.gz"
         return filename,os.access(filename,os.R_OK)
-    elif theext = "":
+    elif theext == "":
         filename = filename+".nii"
         if os.access(filename,os.R_OK):
             return filename,os.access(filename,os.R_OK)
@@ -121,7 +121,7 @@ def main():
     denom = numpy.sqrt(sd2 * 2 * numpy.pi)
 
     if prior == "uniform":
-        dist_theta = 1.0/(priorupper-priorlower)
+        disttheta = 1.0/(priorupper-priorlower)
     elif prior == "normal" or prior == "dataprior":
         priorlower = priormean - numpy.sqrt(priorvar) * 5
         priorupper = priormean + numpy.sqrt(priorvar) * 5
