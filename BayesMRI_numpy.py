@@ -37,48 +37,48 @@ def main():
     
     out_file = ""
     iterations = 1000
-    opts,args = getopt.getopt(sys.argv[1:],'ht:c:d:o:i:u:p:n:')
+    opts,args = getopt.getopt(sys.argv[1:],')ht:c:d:o:i:u:p:n:')
 
     for opt,param in opts:
      if opt == '-h':
-         print '\nbayesMRI_numpy.py\n'
-         print 'This program calculates the Bayes Factor associated with a given group level fMRI t-test. You can specify '
-         print 'a global uniform prior, a global normal prior, or a spatially varying normal prior based on a previous analysis. '
-         print 'For the normal priors, probabilities will be integrated between +/- 5 standard errors of the mean\n'
-         print 'The program outputs the Bayes Factor and log Bayes Factor for the model compared to the null (as well as the inverse).'
-         print 'Likelihoods for the model and null are also output.\n'
-         print 'This program requires Python with NumPy and NiBabel packages installed\n'
-         print 'Usage:\n\t'
-         print 'BayesMRI_numpy.py -t <tstat_file> -c <contrast_file> -d <dof_file> [options]\n'
-         print '\ttstat_file: tstat file from group analysis'
-         print '\tcontrast_file: contrast (cope) file from group analysis'
-         print '\ttdof_file: file containing degrees of freedom for the group analysis\n'
-         print 'Options:'
-         print '\t-o <ouput_file_stem> prefix for output file names (default = "")\n'
-         print '\t-i <iterations> the number of bins used to integrate probabilities (larger = more precise; default = 1000)\n'
-         print '\t-u <lower_limit, upper_limit> Uniform prior: a uniform distribution between lower_limit and upper_limit\n'
-         print '\t-n <mean,stderr> Normal (Gaussian) prior: a normal distribution with given mean and standard error\n'
-         print '\t-p <contrast_file,tstat_file> Data-dependent prior: a spatially varying Gaussian prior with voxelwise mean'
-         print '\t   and standard error based on a previous analysis\n'
-         print '\t-h this information\n\n'
+         print ('\nbayesMRI_numpy.py\n')
+         print ('This program calculates the Bayes Factor associated with a given group level fMRI t-test. You can specify ')
+         print ('a global uniform prior, a global normal prior, or a spatially varying normal prior based on a previous analysis. ')
+         print ('For the normal priors, probabilities will be integrated between +/- 5 standard errors of the mean\n')
+         print ('The program outputs the Bayes Factor and log Bayes Factor for the model compared to the null (as well as the inverse).')
+         print ('Likelihoods for the model and null are also output.\n')
+         print ('This program requires Python with NumPy and NiBabel packages installed\n')
+         print ('Usage:\n\t')
+         print ('BayesMRI_numpy.py -t <tstat_file> -c <contrast_file> -d <dof_file> [options]\n')
+         print ('\ttstat_file: tstat file from group analysis')
+         print ('\tcontrast_file: contrast (cope) file from group analysis')
+         print ('\ttdof_file: file containing degrees of freedom for the group analysis\n')
+         print ('Options:')
+         print ('\t-o <ouput_file_stem> prefix for output file names (default = "")\n')
+         print ('\t-i <iterations> the number of bins used to integrate probabilities (larger = more precise; default = 1000)\n')
+         print ('\t-u <lower_limit, upper_limit> Uniform prior: a uniform distribution between lower_limit and upper_limit\n')
+         print ('\t-n <mean,stderr> Normal (Gaussian) prior: a normal distribution with given mean and standard error\n')
+         print ('\t-p <contrast_file,tstat_file> Data-dependent prior: a spatially varying Gaussian prior with voxelwise mean')
+         print ('\t   and standard error based on a previous analysis\n')
+         print ('\t-h this information\n\n')
          sys.exit()
      elif param != '':
          if opt == '-t':
              tstat_file, file_ok = nifti_check_file(param)
              if not file_ok:
-                 print "Error: Couldn't read t-stat file: "+tstat_file
+                 print ("Error: Couldn't read t-stat file: "+tstat_file)
                  sys.exit(1)
              tstatfile = nib.load(tstat_file)
          if opt == '-c':
               cope_file, file_ok = nifti_check_file(param)
               if not file_ok:
-                  print "Error: Couldn't read contrast file: "+cope_file
+                  print ("Error: Couldn't read contrast file: "+cope_file)
                   sys.exit(1)
               copefile = nib.load(cope_file)
          if opt == '-d':
              dof_file, file_ok = nifti_check_file(param)
              if not file_ok:
-                 print "Error: Couldn't read DOF file: "+dof_file
+                 print ("Error: Couldn't read DOF file: "+dof_file)
                  sys.exit(1)
              doffile = nib.load(dof_file)
          elif opt == '-o':
@@ -98,10 +98,10 @@ def main():
              priorvar = numpy.square(priorsd)
          elif opt == '-p':
              prior = "dataprior"
-             print prior
+             print (prior)
              [priorcopefile,priortstatfile] = param.split(',')
              if not (os.access(priorcopefile+".nii.gz",os.R_OK) and os.access(priortstatfile+".nii.gz",os.R_OK)):
-                 print "Error: Couldn't read prior cope or tstat files: "+priorcopefile,priortstatfile
+                 print ("Error: Couldn't read prior cope or tstat files: "+priorcopefile,priortstatfile)
                  sys.exit(1)
              prior_copefile = nib.load(priorcopefile+".nii.gz")
              prior_tstatfile = nib.load(priortstatfile+".nii.gz")
@@ -109,8 +109,8 @@ def main():
              priortstat = prior_tstatfile.get_data()
              priorvar = numpy.square(priormean / priortstat)
      else:
-         print 'Error: Option '+opt+' not recognised. Use -h option for usage'
-         exit()
+         print ('Error: Option '+opt+' not recognised. Use -h option for usage')
+         sys.exit()
 
     cope = copefile.get_data()
     tstat = tstatfile.get_data()
@@ -127,14 +127,14 @@ def main():
         priorupper = priormean + numpy.sqrt(priorvar) * 5
         distdenom = numpy.sqrt(2 * numpy.pi * priorvar)
     else:
-        print 'Error: You must specify a permitted prior distribution. Use -h option for usage'
-        exit()
+        print ('Error: You must specify a permitted prior distribution. Use -h option for usage')
+        sys.exit()
     
     incr = (priorupper-priorlower)/iterations
         
     for A in range(0,iterations):
         if A/10.0 == round(A/10.0):
-            print "iteration: " + str(A)
+            print ("iteration: " + str(A))
         theta = priorlower + A*incr    
         if prior == "normal" or prior == "dataprior":
             disttheta = norm_pdf(priormean,priorvar,theta,distdenom)
@@ -163,16 +163,16 @@ def main():
     imgs = nib.Nifti1Image(bayesFactorNull, copefile.affine, copefile.header)
     nib.save(imgs, out_file+'bayeslogFactorNull.nii.gz')
     
-    print "The likelihood of your data given your theory is in the file: "+out_file+"likelihoodTheory"
-    print "The likelihood of your data given the null is in the file: "+out_file+"likelihoodNull"
-    print "The Bayes Factor for the model versus the null is in the file: "+out_file+"bayesFactorModel"
-    print "The Bayes Factor for the null versus the model is in the file: "+out_file+"bayesFactorNull"
-    print "The log (base 10) Bayes Factor for the model versus the null is in the file: "+out_file+"bayeslogFactorModel"
-    print "The log (base 10) Bayes Factor for the null versus the model is in the file: "+out_file+"bayeslogFactorNull"
+    print ("The likelihood of your data given your theory is in the file: "+out_file+"likelihoodTheory")
+    print ("The likelihood of your data given the null is in the file: "+out_file+"likelihoodNull")
+    print ("The Bayes Factor for the model versus the null is in the file: "+out_file+"bayesFactorModel")
+    print ("The Bayes Factor for the null versus the model is in the file: "+out_file+"bayesFactorNull")
+    print ("The log (base 10) Bayes Factor for the model versus the null is in the file: "+out_file+"bayeslogFactorModel")
+    print ("The log (base 10) Bayes Factor for the null versus the model is in the file: "+out_file+"bayeslogFactorNull")
     
     end_time = ticks = time.clock()
     time_taken = end_time - start_time
-    print "Total time taken: "+str(time_taken)+" seconds"
+    print ("Total time taken: "+str(time_taken)+" seconds")
 
 
 # Define own version of normal pdf so that the constant denominator doesn't need to be recalculated for each iteration (for speed)
@@ -184,5 +184,4 @@ def norm_pdf(mean, variance, x, thedenom):
 
 if __name__ == "__main__":
     main()
-
 
